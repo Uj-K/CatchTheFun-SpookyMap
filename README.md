@@ -51,22 +51,20 @@ Includes links to public record sites (e.g., sex offender registries), admin mod
 
 ## 🧪 Future Ideas
 
-- Add gamification (e.g., stamp collection for each house visited)
-- Mobile app version using Xamarin or MAUI
-- Real-time crowd tracking or treat status updates
-- OCR-based automatic registration from flyers
+- **Extend platform to support other community events** such as:
+  - 🏡 **Yard sales**
+  - 🎉 **Block parties**
+  - 🧼 **Neighborhood clean-up days**
+  - 🎨 **Art walks or garage shows**
+  
+  Using the same location-based pinning and route optimization features, the platform can help organize and promote various small-to-medium-sized local events throughout the year.
+
 
 ---
 
 ## 👩‍💻 Author
 
 Uju Krallum  
-[GitHub Profile](https://github.com/yourusername)  
-Final project for CPW xxx – Advanced ASP.NET Web Development (Summer 2025)
+School project for CPW226 - Portfolio(Summer 2025)
 
----
-
-## 📄 License
-
-This project is for educational and public benefit purposes. Not intended for commercial use.
 
