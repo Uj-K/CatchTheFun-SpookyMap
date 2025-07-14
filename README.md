@@ -1,70 +1,78 @@
-# 🎃 Spooky Map
+# 🎉 CatchTheFun – SpookyMap Edition 🎃
 
-**Spooky Map** is a web-based application designed to help Halloween participants and trick-or-treaters connect in a fun and safe way. It allows users to pin their decorated houses on a shared map, view other participants, plan optimized trick-or-treat routes, and even access safety information such as sex offender records.
-
-## 📌 Project Overview
-
-Many neighborhoods struggle to coordinate Halloween participation. Spooky Map provides an interactive and community-driven solution to:
-
-- Register participating homes
-- View and filter Halloween activity on a map
-- Optimize trick-or-treat routes
-- Promote safety with public record links and reporting tools
+**Welcome to CatchTheFun – A community-powered platform to help you never miss what's fun around you.**  
+This version, **SpookyMap**, focuses on Halloween house participation and trick-or-treat route planning.
 
 ---
 
-## ✨ Features
+## 📌 What is CatchTheFun?
 
-### 🎯 1. House Registration / Pinning on Map
-Users can register their home as a Halloween destination by submitting information including address, photos, availability, and treat details.
-
-### 🗺️ 2. Route Optimization
-Generate the best walking path to visit as many participating homes as possible, with options to avoid certain areas.
-
-### 🛡️ 3. Safety Feature
-Includes links to public record sites (e.g., sex offender registries), admin moderation tools, and a report button for suspicious entries.
+CatchTheFun is a flexible, map-based platform that allows users to discover and share local community events — from Halloween house tours to yard sales, block parties, and more. This repository demonstrates the **Halloween-themed version** of the platform called **SpookyMap**.
 
 ---
 
-## 🛠️ Tech Stack
+## ✨ Features in SpookyMap Edition
 
-- **Frontend:** HTML, CSS, JavaScript, Bootstrap
-- **Backend:** ASP.NET Core MVC
-- **Map Integration:** Google Maps API (or alternative)
-- **AI (Optional):** AI-powered route suggestion or participation prediction
-- **Database:** SQL Server
-- **Hosting:** Azure Web App (planned)
+### 🏠 House Registration
+Users can pin their house on the map to show they’re participating in Halloween.  
+Details include:
+- Participation hours  
+- Type of candy  
+- Whether adult treats ("boos") are available  
+- Optional photo and description  
 
----
+### 🗺️ Map View & Filters
+- View all registered houses on a Google Map  
+- Click pins to view house info  
+- Filter by participation time or candy type (Planned)
 
-## 🚀 How to Run the Project (Development)
+### 🚶 Route Optimization *(Coming Soon)*
+- Generate an optimized trick-or-treat walking route  
+- Avoid unsafe areas based on public data  
+- Choose shortest or most fun-packed path
 
-1. Clone the repository:
-    ```bash
-    git clone https://github.com/Uj-K/Spooky-Map.git
-    ```
-2. Open the solution in Visual Studio.
-3. Update the database connection string in `appsettings.json`.
-4. Run the project with `Ctrl + F5`.
-
----
-
-## 🧪 Future Ideas
-
-- **Extend platform to support other community events** such as:
-  - 🏡 **Yard sales**
-  - 🎉 **Block parties**
-  - 🧼 **Neighborhood clean-up days**
-  - 🎨 **Art walks or garage shows**
-  
-  Using the same location-based pinning and route optimization features, the platform can help organize and promote various small-to-medium-sized local events throughout the year.
-
+### 🛡️ Safety Feature
+- Admins can moderate submitted house data  
+- Users can report inaccurate entries  
+- Links to public safety sites (e.g. sex offender registry)
 
 ---
 
-## 👩‍💻 Author
+## 🧠 Reusability
 
-Uju Krallum  
-School project for CPW226 - Portfolio(Summer 2025)
+Although this version is Halloween-specific, the project is structured to support other local events in the future, such as:
+- 🏷️ Yard Sales  
+- 🎨 Art Walks  
+- 🎉 Block Parties  
+- 🧼 Community Clean-up Days
+
+All event types will use the same map-based pinning and filtering system, customized per theme.
+
+---
+
+## 🛠 Tech Stack
+
+- **Framework:** ASP.NET Core MVC (.NET 6/8)
+- **Frontend:** Razor Views, Bootstrap, JavaScript
+- **Map Integration:** Google Maps API
+- **Database:** Entity Framework Core + SQL Server
+- **Hosting:** Azure Web App (Planned)
+
+---
+
+## 📸 Screenshots
+(Coming Soon: Once UI is built)
+
+---
+
+## 💬 Credits
+Created by Uju Krallum
+Final Project for CPTC – ASP.NET Core Web Development (Summer 2025)
+
+---
+
+## 📄 License
+This project is open-source for educational and demonstration purposes.  
+Commercial use is not permitted without the author's permission.
 
 
