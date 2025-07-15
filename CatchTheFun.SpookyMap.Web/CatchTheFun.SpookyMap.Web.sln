@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36301.6 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatchTheFun.SpookyMap.Web", "CatchTheFun.SpookyMap.Web\CatchTheFun.SpookyMap.Web.csproj", "{EBCBA2C2-469C-4966-BF43-71ED28F2CCBD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EBCBA2C2-469C-4966-BF43-71ED28F2CCBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBCBA2C2-469C-4966-BF43-71ED28F2CCBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBCBA2C2-469C-4966-BF43-71ED28F2CCBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBCBA2C2-469C-4966-BF43-71ED28F2CCBD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DFE9489E-085F-4FBF-BE2F-2C5BFE717A02}
+	EndGlobalSection
+EndGlobal
