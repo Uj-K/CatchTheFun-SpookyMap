@@ -1,8 +1,13 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Map View";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<h2>@ViewData["Title"]</h2>
+<div id="map" style="height: 500px;"></div>
+
+<script src="~/js/map.js"></script>
+
+<!-- Google Maps API Key 연결 (이건 나중에 안전하게 바꿔줄 거야) -->
+<script async
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAAxodPjibd1ZfW-LYc2p3uLCjDeV9G8Sc&callback=initMap">
+</script>
