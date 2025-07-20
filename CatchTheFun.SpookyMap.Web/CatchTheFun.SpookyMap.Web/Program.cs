@@ -1,7 +1,13 @@
+using CatchTheFun.SpookyMap.Web.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// appsettings.json에 저장한 Google Maps API 키를 컨트롤러에서 꺼내 쓸 수 있도록 등록하는 코드
+builder.Services.Configure<GoogleMapsOptions>(
+    builder.Configuration.GetSection("GoogleMaps"));
 
 var app = builder.Build();
 
