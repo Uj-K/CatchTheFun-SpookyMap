@@ -1,8 +1,19 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Event Map";
+    var apiKey = ViewData["GoogleMapsApiKey"];
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<h1>🎃 Event Map</h1>
+
+<div id="map" style="height: 500px;"></div>
+
+@if (apiKey == null)
+{
+    <p style="color: red;">⚠️ Google Maps API key is missing!</p>
+}
+else
+{
+    <script src="https://maps.googleapis.com/maps/api/js?key=@apiKey&callback=initMap" async defer></script>
+    <script src="~/js/map.js"></script>
+}
+
