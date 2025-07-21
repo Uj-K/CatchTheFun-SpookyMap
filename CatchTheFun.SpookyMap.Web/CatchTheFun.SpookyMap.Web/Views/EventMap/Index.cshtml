@@ -3,9 +3,12 @@
     var apiKey = ViewData["GoogleMapsApiKey"];
 }
 
+<script src="~/js/map.js"></script>
+
 <h1>🎃 Event Map</h1>
 
 <div id="map" style="height: 500px;"></div>
+
 
 @if (apiKey == null)
 {
@@ -13,7 +16,9 @@
 }
 else
 {
-    <script src="https://maps.googleapis.com/maps/api/js?key=@apiKey&callback=initMap" async defer></script>
-    <script src="~/js/map.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=@apiKey&callback=initMap&loading=async"
+            async defer>
+    </script>
+
 }
 
