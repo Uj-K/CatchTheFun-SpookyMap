@@ -361,3 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# API 깃허브에 올라가는거 막아주는 애
+appsettings*.json
+*.map
