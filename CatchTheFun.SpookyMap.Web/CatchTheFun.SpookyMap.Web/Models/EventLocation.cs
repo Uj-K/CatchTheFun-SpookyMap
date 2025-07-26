@@ -9,7 +9,7 @@ namespace CatchTheFun.SpookyMap.Web.Models
         public int Id { get; set; }
 
         [Required]
-        [Display(Name = "Location Name")]
+        [Display(Name = "Your Name")]
         [StringLength(100, ErrorMessage = "Location name cannot exceed 100 characters.")]
         public string Name { get; set; }
 
