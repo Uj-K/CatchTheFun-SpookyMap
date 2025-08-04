@@ -54,7 +54,7 @@ namespace CatchTheFun.SpookyMap.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Address,Description,EventType,Lat,Lng")] EventLocation eventLocation)
+        public async Task<IActionResult> Create([Bind("Id,Name,Address,Description,SomethingElse,Lat,Lng")] EventLocation eventLocation)
         {
             if (ModelState.IsValid)
             {
@@ -86,7 +86,7 @@ namespace CatchTheFun.SpookyMap.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Address,Description,EventType,Lat,Lng")] EventLocation eventLocation)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Address,Description,SomethingElse,Lat,Lng")] EventLocation eventLocation)
         {
             if (id != eventLocation.Id)
             {
