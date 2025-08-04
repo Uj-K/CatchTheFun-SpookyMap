@@ -9,19 +9,19 @@ namespace CatchTheFun.SpookyMap.Web.Models
         public int Id { get; set; }
 
         [Required]
-        [Display(Name = "Your Name")]
-        [StringLength(100, ErrorMessage = "Location name cannot exceed 100 characters.")]
+        [StringLength(100, ErrorMessage = "Name cannot exceed 100 characters.")]
         public string Name { get; set; }
 
         [Required]
         public string Address { get; set; }
 
-        [Display(Name = "Description (optional)")]
+        [Required]
+        [Display(Name = "What type of candy do you have?")]
         public string? Description { get; set; }
 
         [Required]
-        [Display(Name = "Event Type")]
-        public string EventType { get; set; }
+        [Display(Name = "Do you have something other than candy?")]
+        public bool SomethingElse { get; set; }
 
         // Geocoding 결과로 저장되는 위치 정보
         public double? Lat { get; set; }
