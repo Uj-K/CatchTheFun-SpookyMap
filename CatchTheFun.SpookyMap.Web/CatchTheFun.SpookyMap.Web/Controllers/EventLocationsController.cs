@@ -1,23 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using CatchTheFun.SpookyMap.Web.Data;
+using CatchTheFun.SpookyMap.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using CatchTheFun.SpookyMap.Web.Data;
-using CatchTheFun.SpookyMap.Web.Models;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json; // for Geocoding
+using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Linq;
+using System.Net.Http; // for Geocoding 
+using System.Threading.Tasks;
 
 namespace CatchTheFun.SpookyMap.Web.Controllers
 {
     public class EventLocationsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IConfiguration _configuration;
 
-        public EventLocationsController(ApplicationDbContext context)
+        public EventLocationsController(ApplicationDbContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
+
 
         // GET: EventLocations
         public async Task<IActionResult> Index()
@@ -54,16 +61,28 @@ namespace CatchTheFun.SpookyMap.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Address,Description,SomethingElse,Lat,Lng")] EventLocation eventLocation)
+        public async Task<IActionResult> Create([Bind("Id,Name,Address,Description,SomethingElse")] EventLocation eventLocation)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(eventLocation);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                var coords = await GetCoordinatesFromAddress(eventLocation.Address);
+                if (coords != null)
+                {
+                    eventLocation.Lat = coords.Value.lat;
+                    eventLocation.Lng = coords.Value.lng;
+
+                    _context.Add(eventLocation);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    ModelState.AddModelError("Address", "Invalid address. Could not fetch location data.");
+                }
             }
             return View(eventLocation);
         }
+
 
         // GET: EventLocations/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -86,7 +105,7 @@ namespace CatchTheFun.SpookyMap.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Address,Description,SomethingElse,Lat,Lng")] EventLocation eventLocation)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Address,Description,SomethingElse")] EventLocation eventLocation)
         {
             if (id != eventLocation.Id)
             {
@@ -153,5 +172,32 @@ namespace CatchTheFun.SpookyMap.Web.Controllers
         {
             return _context.EventLocations.Any(e => e.Id == id);
         }
+
+        // Geocoding 
+        private async Task<(double lat, double lng)?> GetCoordinatesFromAddress(string address)
+        {
+            var apiKey = _configuration["GoogleMaps:ApiKey"];
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                throw new Exception("Google Maps API key not found in appsettings.json.");
+            }
+
+            var httpClient = new HttpClient();
+            var url = $"https://maps.googleapis.com/maps/api/geocode/json?address={Uri.EscapeDataString(address)}&key={apiKey}";
+
+            var response = await httpClient.GetStringAsync(url);
+            dynamic result = JsonConvert.DeserializeObject(response);
+
+            if (result.status == "OK")
+            {
+                double lat = result.results[0].geometry.location.lat;
+                double lng = result.results[0].geometry.location.lng;
+                return (lat, lng);
+            }
+
+            return null;
+        }
+
+
     }
 }
