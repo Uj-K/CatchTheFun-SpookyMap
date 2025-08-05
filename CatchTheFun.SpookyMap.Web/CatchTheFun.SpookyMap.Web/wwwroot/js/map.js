@@ -12,7 +12,7 @@
     const markers = [];
 
     locations.forEach(loc => {
-        const position = { lat: loc.latitude, lng: loc.longitude };
+        const position = { lat: loc.Lat, lng: loc.Lng };
         const marker = new google.maps.Marker({
             position,
             map,
