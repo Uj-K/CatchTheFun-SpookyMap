@@ -53,6 +53,7 @@ namespace CatchTheFun.SpookyMap.Web.Controllers
         // GET: EventLocations/Create
         public IActionResult Create()
         {
+            ViewData["GoogleMapsApiKey"] = _configuration["GoogleMaps:ApiKey"];
             return View();
         }
 
@@ -70,7 +71,6 @@ namespace CatchTheFun.SpookyMap.Web.Controllers
                 {
                     eventLocation.Lat = coords.Value.lat;
                     eventLocation.Lng = coords.Value.lng;
-
                     _context.Add(eventLocation);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
@@ -183,7 +183,7 @@ namespace CatchTheFun.SpookyMap.Web.Controllers
             }
 
             var httpClient = new HttpClient();
-            var url = $"https://maps.googleapis.com/maps/api/geocode/json?address={Uri.EscapeDataString(address)}&key={apiKey}";
+            var url = $"https://maps.googleapis.com/maps/api/geocode/json?address={Uri.EscapeDataString(address)}&language=en&key={apiKey}";
 
             var response = await httpClient.GetStringAsync(url);
             dynamic result = JsonConvert.DeserializeObject(response);

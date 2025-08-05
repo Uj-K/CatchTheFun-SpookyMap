@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Register your house";
+    var apiKey = ViewData["GoogleMapsApiKey"];
 }
 
 <h1>Add your house for trick-or-treaters!</h1>
@@ -51,29 +52,36 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 
-    <script>
-        function initAutocomplete() {
-            const input = document.getElementById('autocomplete');
+    @if (string.IsNullOrEmpty(apiKey?.ToString()))
+    {
+        <script>
+            alert("Google Maps API key is missing. Address autocomplete will not work.");
+        </script>
+    }
+    else
+    {
+        <script>
+            function initAutocomplete() {
+                const input = document.getElementById('autocomplete');
+                const options = {
+                    componentRestrictions: { country: "us" },
+                    fields: ["formatted_address", "geometry"],
+                    types: ["address"]
+                };
+                const autocomplete = new google.maps.places.Autocomplete(input, options);
+                const tacomaBounds = new google.maps.LatLngBounds(
+                    { lat: 47.2, lng: -122.6 },
+                    { lat: 47.3, lng: -122.3 }
+                );
+                autocomplete.setBounds(tacomaBounds);
+                autocomplete.setOptions({ strictBounds: true });
+            }
 
-            const options = {
-                componentRestrictions: { country: "us" },
-                fields: ["formatted_address", "geometry"],
-                types: ["address"]
-            };
+        </script>
 
-            const autocomplete = new google.maps.places.Autocomplete(input, options);
+        <script src="https://maps.googleapis.com/maps/api/js?key=@ViewData["GoogleMapsApiKey"]&libraries=places&callback=initAutocomplete&language=en"
+                async defer></script>
 
-            // Tacoma 
-            const tacomaBounds = new google.maps.LatLngBounds(
-                { lat: 47.2, lng: -122.6 },
-                { lat: 47.3, lng: -122.3 }
-            );
-            autocomplete.setBounds(tacomaBounds);
-            autocomplete.setOptions({ strictBounds: true });
-        }
-    </script>
-
-    <script src="https://maps.googleapis.com/maps/api/js?key=@ViewData["GoogleMapsApiKey"]&libraries=places&callback=initAutocomplete"
-            async defer></script>
+    }
 }
 
