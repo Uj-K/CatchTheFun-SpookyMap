@@ -1,19 +1,35 @@
-﻿@{
+﻿@model IEnumerable<CatchTheFun.SpookyMap.Web.Models.EventLocation>
+@using System.Text.Json
+
+@{
     ViewData["Title"] = "Event Map";
     var apiKey = ViewData["GoogleMapsApiKey"];
+
+    // JS에서 lat/lng만 다루도록 camelCase로 변환
+    var dto = Model?.Select(e => new
+    {
+        lat = e.Lat,
+        lng = e.Lng,
+        address = e.Address,
+        name = e.Name,
+        description = e.Description
+    }) ?? Enumerable.Empty<object>();
+
+    var json = JsonSerializer.Serialize(dto);
 }
 
 <!-- JSON 데이터 전달 -->
 <script id="location-data" type="application/json">
-    @Html.Raw(Json.Serialize(Model))
+    @Html.Raw(json)
 </script>
 
-<!-- 지도 렌더링 JS -->
-<script src="~/js/map.js"></script>
+
+<!-- 지도 렌더링 JS (해시 붙여서 캐시 무효화) -->
+<script src="~/js/map.js" asp-append-version="true"></script>
 
 <h1>🎃 Event Map</h1>
 
-<div id="map" style="height: 500px;"></div>
+<div id="map" style="height:500px"></div>
 
 @if (apiKey == null)
 {
