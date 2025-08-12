@@ -6,28 +6,30 @@
         center: fallbackCenter,
     });
 
-    const locations = JSON.parse(document.getElementById("location-data").textContent);
+    const raw = document.getElementById("location-data")?.textContent?.trim();
+    const locations = (raw ? JSON.parse(raw) : null) || [];  // null → []
 
     const bounds = new google.maps.LatLngBounds();
     const markers = [];
 
     locations.forEach(loc => {
-        const position = { lat: loc.Lat, lng: loc.Lng };
+
+        const lat = loc.Lat ?? loc.lat ?? loc.latitude;
+        const lng = loc.Lng ?? loc.lng ?? loc.longitude;
+        if (typeof lat !== "number" || typeof lng !== "number") return;
+
+
+        const position = { lat, lng };
         const marker = new google.maps.Marker({
             position,
             map,
-            title: loc.address
+            title: loc.address ?? loc.Address ?? "",
         });
 
         markers.push(marker);
         bounds.extend(position);
     });
 
-    if (locations.length > 0) {
-        map.fitBounds(bounds); // 모든 마커가 보이도록 자동 확대/중심 설정
-    }
-
-    // Marker Clusterer 적용
-    new markerClusterer.MarkerClusterer({ map, markers });
+    if (markers.length > 0) map.fitBounds(bounds);
 }
 

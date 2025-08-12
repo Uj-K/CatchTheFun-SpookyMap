@@ -1,30 +1,40 @@
-using System.Diagnostics;
 using CatchTheFun.SpookyMap.Web.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration; // For accessing configuration settings (for Google Maps API key) 1. using Microsoft Extensions
+using System.Diagnostics;
+using CatchTheFun.SpookyMap.Web.Data;
 
 namespace CatchTheFun.SpookyMap.Web.Controllers
 {
     public class EventMapController : Controller
     {
         private readonly ILogger<EventMapController> _logger;
+        private readonly ApplicationDbContext _context;
         private readonly IConfiguration _configuration; // 2. Inject IConfiguration to access app settings
 
-        public EventMapController(ILogger<EventMapController> logger, IConfiguration configuration)
+        public EventMapController(ILogger<EventMapController> logger, ApplicationDbContext context, IConfiguration configuration)
         {
             _logger = logger;
+            _context = context;
             _configuration = configuration; // 3. Initialize IConfiguration in the constructor
         }
 
-        public IActionResult Index()
+
+    public async Task<IActionResult> Index()
         {
             var apiKey = _configuration["GoogleMaps:ApiKey"];
             ViewData["GoogleMapsApiKey"] = apiKey;
-            return View();
+
+            var locations = await _context.EventLocations
+                .Where(e => e.Lat != null && e.Lng != null)
+                .ToListAsync(); // 비동기
+
+            return View(locations); // ★ Model을 넘겨야 함
         }
 
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
