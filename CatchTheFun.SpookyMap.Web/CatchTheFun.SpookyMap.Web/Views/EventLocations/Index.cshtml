@@ -25,10 +25,13 @@
                 @Html.DisplayNameFor(model => model.SomethingElse)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Lat)
+                @Html.DisplayNameFor(model => model.PhotoUrl)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Lng)
+                @Html.DisplayNameFor(model => model.StartTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EndTime)
             </th>
             <th></th>
         </tr>
@@ -49,14 +52,16 @@
                 @Html.DisplayFor(modelItem => item.SomethingElse)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Lat)
+                @Html.DisplayFor(modelItem => item.PhotoUrl)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Lng)
+                @Html.DisplayFor(modelItem => item.StartTime)
             </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EndTime)
+                </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>

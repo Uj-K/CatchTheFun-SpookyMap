@@ -13,7 +13,11 @@
         address = e.Address,
         name = e.Name,
         description = e.Description,
-        somethingElse = e.SomethingElse
+        somethingElse = e.SomethingElse,
+        photoUrl = e.PhotoUrl,
+        // TimeOnly → "HH:mm" 문자열로 변환
+        startTime = e.StartTime?.ToString("HH\\:mm"),
+        endTime = e.EndTime?.ToString("HH\\:mm")
     }) ?? Enumerable.Empty<object>();
 
     var json = JsonSerializer.Serialize(dto);

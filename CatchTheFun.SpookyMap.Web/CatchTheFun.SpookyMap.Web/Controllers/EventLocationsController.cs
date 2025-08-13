@@ -18,11 +18,13 @@ namespace CatchTheFun.SpookyMap.Web.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _env;
 
-        public EventLocationsController(ApplicationDbContext context, IConfiguration configuration)
+        public EventLocationsController(ApplicationDbContext context, IConfiguration configuration, IWebHostEnvironment env)
         {
             _context = context;
             _configuration = configuration;
+            _env = env;
         }
 
 
@@ -62,8 +64,20 @@ namespace CatchTheFun.SpookyMap.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Address,Description,SomethingElse")] EventLocation eventLocation)
+        public async Task<IActionResult> Create(
+            [Bind("Id,Name,Address,Description,SomethingElse, PhotoUrl, StartTime, EndTime")] 
+            EventLocation eventLocation, IFormFile? photo)
         {
+            // 1. 업로드 검증
+            if (photo is { Length: > 0 })
+            {
+                var ok = new[] { "image/jpeg", "image/png", "image/webp", "image/gif" };
+                if (!ok.Contains(photo.ContentType))
+                    ModelState.AddModelError(nameof(eventLocation.PhotoUrl), "Only jpg/png/webp/gif allowed.");
+                if (photo.Length > 5 * 1024 * 1024)
+                    ModelState.AddModelError(nameof(eventLocation.PhotoUrl), "Max 5MB.");
+            }
+            // 2. 주소 지오코딩
             if (ModelState.IsValid)
             {
                 var coords = await GetCoordinatesFromAddress(eventLocation.Address);
@@ -79,8 +93,31 @@ namespace CatchTheFun.SpookyMap.Web.Controllers
                 {
                     ModelState.AddModelError("Address", "Invalid address. Could not fetch location data.");
                 }
+
+                //3) 사진 저장(wwwroot/ uploads / yyyy / MM / GUID.ext)
+                if (photo is { Length: > 0 })
+                {
+                    var y = DateTime.UtcNow.ToString("yyyy");
+                    var m = DateTime.UtcNow.ToString("MM");
+                    var relDir = Path.Combine("uploads", y, m);
+                    var absDir = Path.Combine(_env.WebRootPath, relDir);
+                    Directory.CreateDirectory(absDir);
+
+                    var ext = Path.GetExtension(photo.FileName);
+                    if (string.IsNullOrWhiteSpace(ext)) ext = ".jpg";
+
+                    var fileName = $"{Guid.NewGuid():N}{ext}";
+                    var absPath = Path.Combine(absDir, fileName);
+
+                    await using (var fs = new FileStream(absPath, FileMode.Create))
+                        await photo.CopyToAsync(fs);
+
+                    eventLocation.PhotoUrl = "/" + Path.Combine(relDir, fileName).Replace("\\", "/");
+                }
             }
-            return View(eventLocation);
+            _context.Add(eventLocation);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index", "EventMap");
         }
 
 
@@ -105,7 +142,7 @@ namespace CatchTheFun.SpookyMap.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Address,Description,SomethingElse")] EventLocation eventLocation)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Address,Description,SomethingElse, PhotoUrl, StartTime, EndTime")] EventLocation eventLocation)
         {
             if (id != eventLocation.Id)
             {
