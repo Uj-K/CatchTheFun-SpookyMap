@@ -35,26 +35,34 @@
             const addr = loc.address ?? loc.Address ?? "";
             const desc = loc.description ?? loc.Description ?? "";
 
-            // ✅ somethingElse 안전 변환
-            const raw = (loc.somethingElse ?? loc.SomethingElse ?? false);
-            const hasExtra = (typeof raw === "boolean")
-                ? raw
-                : (typeof raw === "string")
-                    ? ["true", "1", "yes", "y", "on"].includes(raw.toLowerCase())
-                    : (typeof raw === "number")
-                        ? raw === 1
+            // ✅ JS에서 DTO 읽기 
+            const photo = loc.photoUrl ?? loc.PhotoUrl ?? "";
+            const st = loc.startTime ?? ""; // "18:00" (Index.cshtml에서 문자열로 내려옴)
+            const et = loc.endTime ?? ""; // "21:00"
+
+            // ✅ somethingElse 안전 변환 
+            const extraRaw = (loc.somethingElse ?? loc.SomethingElse ?? false);
+            const hasExtra = (typeof extraRaw === "boolean")
+                ? extraRaw
+                : (typeof extraRaw === "string")
+                    ? ["true", "1", "yes", "y", "on"].includes(extraRaw.toLowerCase())
+                    : (typeof extraRaw === "number")
+                        ? extraRaw === 1
                         : false;
 
             info.setContent(`
-            <div style="min-width:220px">
-                <strong>${name}</strong><br>
-                ${addr}${desc ? `<br><small>${desc}</small>` : ""}
-                ${hasExtra
-                    ? `<div style="margin-top:6px"><small>Other treats: Yes!</small></div>`
-                    : `<div style="margin-top:6px"><small>Other treats: Nope</small></div>`}
-                </div>
-            `);
-            info.open({ anchor: marker, map });
+                <div style="min-width:240px;line-height:1.3">
+                ${photo ? `<div style="margin-bottom:6px">
+                    <img src="${photo}" alt="" style="max-width:240px;max-height:160px;border-radius:8px;object-fit:cover"/>
+                </div>` : ""}
+            <strong>${name}</strong><br>${addr}
+            ${desc ? `<br><small>${desc}</small>` : ""}
+            ${(st || et) ? `<div style="margin-top:6px"><small>Hours: ${st}${(st && et) ? "∼" : ""}${et}</small></div>` : ""}
+            <div style="margin-top:6px"><small>Other treats: ${hasExtra ? "Yes" : "No"}</small></div>
+            </div>
+        `);
+
+            try { info.open({ anchor: marker, map }); } catch { info.open(map, marker); }
         });
 
 
