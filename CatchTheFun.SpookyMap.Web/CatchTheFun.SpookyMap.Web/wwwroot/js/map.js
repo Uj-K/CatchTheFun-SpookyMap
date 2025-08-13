@@ -34,14 +34,29 @@
             const name = loc.name ?? loc.Name ?? "";
             const addr = loc.address ?? loc.Address ?? "";
             const desc = loc.description ?? loc.Description ?? "";
+
+            // ✅ somethingElse 안전 변환
+            const raw = (loc.somethingElse ?? loc.SomethingElse ?? false);
+            const hasExtra = (typeof raw === "boolean")
+                ? raw
+                : (typeof raw === "string")
+                    ? ["true", "1", "yes", "y", "on"].includes(raw.toLowerCase())
+                    : (typeof raw === "number")
+                        ? raw === 1
+                        : false;
+
             info.setContent(`
-                <div style="min-width:220px">
-                  <strong>${name}</strong><br>
-                  ${addr}${desc ? `<br><small>${desc}</small>` : ""}
+            <div style="min-width:220px">
+                <strong>${name}</strong><br>
+                ${addr}${desc ? `<br><small>${desc}</small>` : ""}
+                ${hasExtra
+                    ? `<div style="margin-top:6px"><small>Other treats: Yes!</small></div>`
+                    : `<div style="margin-top:6px"><small>Other treats: Nope</small></div>`}
                 </div>
             `);
             info.open({ anchor: marker, map });
         });
+
 
         markers.push(marker);
         bounds.extend(position);

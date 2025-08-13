@@ -12,7 +12,8 @@
         lng = e.Lng,
         address = e.Address,
         name = e.Name,
-        description = e.Description
+        description = e.Description,
+        somethingElse = e.SomethingElse
     }) ?? Enumerable.Empty<object>();
 
     var json = JsonSerializer.Serialize(dto);
