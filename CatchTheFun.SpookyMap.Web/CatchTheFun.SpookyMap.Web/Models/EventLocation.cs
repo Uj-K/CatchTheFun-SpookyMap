@@ -10,7 +10,7 @@ namespace CatchTheFun.SpookyMap.Web.Models
 
         // Actual name of the house owner, or nick name
         [Required]
-        [Display(Name = "Nick Name")]
+        [Display(Name = "Name or Nickname")]
         [StringLength(100, ErrorMessage = "Name cannot exceed 100 characters.")]
         public string Name { get; set; }
 
