@@ -4,10 +4,12 @@
 @{
     ViewData["Title"] = "Event Map";
     var apiKey = ViewData["GoogleMapsApiKey"];
+    var highlightId = ViewData["HighlightId"]; // 전달받은 하이라이트 Id
 
     // JS에서 lat/lng만 다루도록 camelCase로 변환
     var dto = Model?.Select(e => new
     {
+        id = e.Id,
         lat = e.Lat,
         lng = e.Lng,
         address = e.Address,
@@ -28,6 +30,10 @@
     @Html.Raw(json)
 </script>
 
+@if (highlightId != null)
+{
+    <script>window.__HIGHLIGHT_ID__ = @highlightId;</script>
+}
 
 <!-- 지도 렌더링 JS (해시 붙여서 캐시 무효화) -->
 <script src="~/js/map.js" asp-append-version="true"></script>

@@ -35,6 +35,10 @@
         anchor: new google.maps.Point(14, 14)
     };
 
+    let highlightMarker = null;
+    const highlightId = (typeof window !== 'undefined' && typeof window.__HIGHLIGHT_ID__ !== 'undefined')
+        ? Number(window.__HIGHLIGHT_ID__) : null;
+
     locations.forEach(loc => {
         const latRaw = loc.Lat ?? loc.lat ?? loc.latitude;
         const lngRaw = loc.Lng ?? loc.lng ?? loc.longitude;
@@ -72,9 +76,26 @@
             try { info.open({ anchor: marker, map }); } catch { info.open(map, marker); }
         });
 
+        // 하이라이트 대상 체크 (id가 전달된 경우 자동 오픈 + 흔들림)
+        const idVal = Number(loc.id ?? loc.Id);
+        if (Number.isFinite(highlightId) && idVal === highlightId) {
+            highlightMarker = marker;
+            map.setCenter(position);
+            map.setZoom(16);
+            setTimeout(() => {
+                marker.setAnimation(google.maps.Animation.BOUNCE);
+                // 클릭 이벤트 트리거하여 팝업 열기
+                google.maps.event.trigger(marker, 'click');
+                // 1.4초 후 흔들림 중지
+                setTimeout(() => marker.setAnimation(null), 1400);
+            }, 350);
+        }
+
         markers.push(marker);
         bounds.extend(position);
     });
 
-    if (markers.length > 0) map.fitBounds(bounds);
+    if (markers.length > 0 && !highlightMarker) {
+        map.fitBounds(bounds);
+    }
 }

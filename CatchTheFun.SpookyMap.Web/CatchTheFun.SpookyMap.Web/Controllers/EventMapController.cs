@@ -21,10 +21,11 @@ namespace CatchTheFun.SpookyMap.Web.Controllers
         }
 
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int? highlightId)
         {
             var apiKey = _configuration["GoogleMaps:ApiKey"];
             ViewData["GoogleMapsApiKey"] = apiKey;
+            ViewData["HighlightId"] = highlightId; // 전달하여 방금 추가한 집을 강조
 
             var locations = await _context.EventLocations
                 .Where(e => e.Lat != null && e.Lng != null)

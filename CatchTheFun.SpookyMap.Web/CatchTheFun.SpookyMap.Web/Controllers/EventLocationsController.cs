@@ -107,7 +107,8 @@ namespace CatchTheFun.SpookyMap.Web.Controllers
                     eventLocation.Lng = coords.Value.lng;
                     _context.Add(eventLocation);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
+                    // 지도 화면으로 이동하면서 방금 등록한 항목을 강조/팝업
+                    return RedirectToAction("Index", "EventMap", new { highlightId = eventLocation.Id });
                 }
                 else
                 {
