@@ -58,7 +58,9 @@
             info.setContent(`
                 <div style="min-width:240px;line-height:1.35;color:#e9e2f8">
                     ${photo ? `<div style="margin-bottom:6px">
-                        <img src="${photo}" alt="" style="max-width:240px;max-height:160px;border-radius:8px;object-fit:cover;border:1px solid rgba(255,255,255,.12)"/>
+                        <a href="${photo}" target="_blank" rel="noopener noreferrer" title="Open full size">
+                            <img src="${photo}" alt="" style="max-width:240px;max-height:160px;border-radius:8px;object-fit:cover;border:1px solid rgba(255,255,255,.12);cursor:zoom-in"/>
+                        </a>
                     </div>` : ""}
                     <div style="font-family:'Creepster',cursive;font-size:18px;color:#ff7b00">${name}</div>
                     <div style="font-size:13px;color:#b8a9d9">${addr}</div>

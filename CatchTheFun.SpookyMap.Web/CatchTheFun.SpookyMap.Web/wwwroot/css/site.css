@@ -63,15 +63,15 @@ body { background: radial-gradient(1000px 600px at 10% 0%, #1b1030 0%, #0e0718 6
 /* Buttons */
 .btn-primary { background-color: var(--spooky-primary); border-color: var(--spooky-primary); }
 .btn-outline-secondary { color: var(--spooky-text); border-color: var(--spooky-muted); }
-.btn-outline-secondary:hover { background-color: rgba(255,255,255,0.06);}
+.btn-outline-secondary:hover { background-color: rgba(255,255,255,0.06);} 
 
 /* Links and accents */
 a { color: #c3a6ff; }
 a:hover { color: #ffb84d;}
 
 /* Map */
-#map { border-radius: 12px; box-shadow: 0 6px 24px rgba(0,0,0,.45);}
+#map { border-radius: 12px; box-shadow: 0 6px 24px rgba(0,0,0,.45);} 
 
 /* Utilities */
 .text-muted { color: var(--spooky-muted) !important; }
-.footer { border-top: 1px solid rgba(255,255,255,.08); }}
+.footer { border-top: 1px solid rgba(255,255,255,.08); }

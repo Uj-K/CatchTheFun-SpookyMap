@@ -60,8 +60,6 @@ namespace CatchTheFun.SpookyMap.Web.Controllers
         }
 
         // POST: EventLocations/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
@@ -77,24 +75,10 @@ namespace CatchTheFun.SpookyMap.Web.Controllers
                 if (photo.Length > 5 * 1024 * 1024)
                     ModelState.AddModelError(nameof(eventLocation.PhotoUrl), "Max 5MB.");
             }
-            // 2. 주소 지오코딩
+
             if (ModelState.IsValid)
             {
-                var coords = await GetCoordinatesFromAddress(eventLocation.Address);
-                if (coords != null)
-                {
-                    eventLocation.Lat = coords.Value.lat;
-                    eventLocation.Lng = coords.Value.lng;
-                    _context.Add(eventLocation);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
-                }
-                else
-                {
-                    ModelState.AddModelError("Address", "Invalid address. Could not fetch location data.");
-                }
-
-                //3) 사진 저장(wwwroot/ uploads / yyyy / MM / GUID.ext)
+                // 1) Photo save first (keeps URL if provided)
                 if (photo is { Length: > 0 })
                 {
                     var y = DateTime.UtcNow.ToString("yyyy");
@@ -114,10 +98,25 @@ namespace CatchTheFun.SpookyMap.Web.Controllers
 
                     eventLocation.PhotoUrl = "/" + Path.Combine(relDir, fileName).Replace("\\", "/");
                 }
+
+                // 2) Geocode address
+                var coords = await GetCoordinatesFromAddress(eventLocation.Address);
+                if (coords != null)
+                {
+                    eventLocation.Lat = coords.Value.lat;
+                    eventLocation.Lng = coords.Value.lng;
+                    _context.Add(eventLocation);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    ModelState.AddModelError("Address", "Invalid address. Could not fetch location data.");
+                }
             }
-            _context.Add(eventLocation);
-            await _context.SaveChangesAsync();
-            return RedirectToAction("Index", "EventMap");
+
+            // If we got this far, something failed; return view for correction
+            return View(eventLocation);
         }
 
 
@@ -138,38 +137,89 @@ namespace CatchTheFun.SpookyMap.Web.Controllers
         }
 
         // POST: EventLocations/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Address,Description,SomethingElse, PhotoUrl, StartTime, EndTime")] EventLocation eventLocation)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Address,Description,SomethingElse, PhotoUrl, StartTime, EndTime")] EventLocation form, IFormFile? photo)
         {
-            if (id != eventLocation.Id)
+            if (id != form.Id)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(eventLocation);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!EventLocationExists(eventLocation.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                return View(form);
             }
-            return View(eventLocation);
+
+            var entity = await _context.EventLocations.FindAsync(id);
+            if (entity == null)
+            {
+                return NotFound();
+            }
+
+            // Photo upload validation (same as in Create)
+            if (photo is { Length: > 0 })
+            {
+                var ok = new[] { "image/jpeg", "image/png", "image/webp", "image/gif" };
+                if (!ok.Contains(photo.ContentType))
+                    ModelState.AddModelError(nameof(form.PhotoUrl), "Only jpg/png/webp/gif allowed.");
+                if (photo.Length > 5 * 1024 * 1024)
+                    ModelState.AddModelError(nameof(form.PhotoUrl), "Max 5MB.");
+
+                if (!ModelState.IsValid)
+                    return View(form);
+            }
+
+            // Update scalar fields
+            entity.Name = form.Name;
+            entity.Description = form.Description;
+            entity.SomethingElse = form.SomethingElse;
+            entity.StartTime = form.StartTime;
+            entity.EndTime = form.EndTime;
+
+            // Address change handling
+            var oldAddress = entity.Address;
+            if (!string.Equals(oldAddress, form.Address, StringComparison.OrdinalIgnoreCase))
+            {
+                // Geocode new address
+                var coords = await GetCoordinatesFromAddress(form.Address);
+                if (coords == null)
+                {
+                    ModelState.AddModelError("Address", "Invalid address. Could not fetch location data.");
+                    return View(form);
+                }
+                entity.Address = form.Address;
+                entity.Lat = coords.Value.lat;
+                entity.Lng = coords.Value.lng;
+            }
+            else
+            {
+                entity.Address = form.Address; // unchanged
+            }
+
+            // Photo upload
+            if (photo is { Length: > 0 })
+            {
+                var y = DateTime.UtcNow.ToString("yyyy");
+                var m = DateTime.UtcNow.ToString("MM");
+                var relDir = Path.Combine("uploads", y, m);
+                var absDir = Path.Combine(_env.WebRootPath, relDir);
+                Directory.CreateDirectory(absDir);
+
+                var ext = Path.GetExtension(photo.FileName);
+                if (string.IsNullOrWhiteSpace(ext)) ext = ".jpg";
+
+                var fileName = $"{Guid.NewGuid():N}{ext}";
+                var absPath = Path.Combine(absDir, fileName);
+
+                await using (var fs = new FileStream(absPath, FileMode.Create))
+                    await photo.CopyToAsync(fs);
+
+                entity.PhotoUrl = "/" + Path.Combine(relDir, fileName).Replace("\\", "/");
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: EventLocations/Delete/5
