@@ -66,6 +66,9 @@ namespace CatchTheFun.SpookyMap.Web.Controllers
             [Bind("Id,Name,Address,Description,SomethingElse, PhotoUrl, StartTime, EndTime")] 
             EventLocation eventLocation, IFormFile? photo)
         {
+            // 다시 그릴 때 자동완성 사용을 위해 항상 API 키 제공
+            ViewData["GoogleMapsApiKey"] = _configuration["GoogleMaps:ApiKey"];
+
             // 1. 업로드 검증
             if (photo is { Length: > 0 })
             {
@@ -74,6 +77,19 @@ namespace CatchTheFun.SpookyMap.Web.Controllers
                     ModelState.AddModelError(nameof(eventLocation.PhotoUrl), "Only jpg/png/webp/gif allowed.");
                 if (photo.Length > 5 * 1024 * 1024)
                     ModelState.AddModelError(nameof(eventLocation.PhotoUrl), "Max 5MB.");
+            }
+
+            // 2. 주소 중복 방지 (공백 제거 + 대소문자 무시)
+            if (!string.IsNullOrWhiteSpace(eventLocation.Address))
+            {
+                var addr = eventLocation.Address.Trim();
+                var addrLower = addr.ToLower();
+                var exists = await _context.EventLocations
+                    .AnyAsync(e => e.Address != null && e.Address.Trim().ToLower() == addrLower);
+                if (exists)
+                {
+                    ModelState.AddModelError(nameof(eventLocation.Address), "이미 등록된 주소입니다.");
+                }
             }
 
             if (ModelState.IsValid)
@@ -178,10 +194,25 @@ namespace CatchTheFun.SpookyMap.Web.Controllers
             entity.StartTime = form.StartTime;
             entity.EndTime = form.EndTime;
 
-            // Address change handling
+            // Address change handling + duplicate check
             var oldAddress = entity.Address;
-            if (!string.Equals(oldAddress, form.Address, StringComparison.OrdinalIgnoreCase))
+            var newAddress = form.Address;
+            if (!string.Equals(oldAddress?.Trim(), newAddress?.Trim(), StringComparison.OrdinalIgnoreCase))
             {
+                // Duplicate address guard
+                if (!string.IsNullOrWhiteSpace(newAddress))
+                {
+                    var addr = newAddress.Trim();
+                    var addrLower = addr.ToLower();
+                    var exists = await _context.EventLocations
+                        .AnyAsync(e => e.Id != id && e.Address != null && e.Address.Trim().ToLower() == addrLower);
+                    if (exists)
+                    {
+                        ModelState.AddModelError("Address", "This address is already registered.");
+                        return View(form);
+                    }
+                }
+
                 // Geocode new address
                 var coords = await GetCoordinatesFromAddress(form.Address);
                 if (coords == null)
