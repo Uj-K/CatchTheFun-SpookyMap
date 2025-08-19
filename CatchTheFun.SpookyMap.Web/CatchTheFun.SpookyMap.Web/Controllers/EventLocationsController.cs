@@ -88,7 +88,7 @@ namespace CatchTheFun.SpookyMap.Web.Controllers
                     .AnyAsync(e => e.Address != null && e.Address.Trim().ToLower() == addrLower);
                 if (exists)
                 {
-                    ModelState.AddModelError(nameof(eventLocation.Address), "이미 등록된 주소입니다.");
+                    ModelState.AddModelError(nameof(eventLocation.Address), "This address is already registered.");
                 }
             }
 
