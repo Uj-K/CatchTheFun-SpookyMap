@@ -29,9 +29,33 @@ namespace CatchTheFun.SpookyMap.Web.Controllers
 
 
         // GET: EventLocations
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? q, bool? hasExtra)
         {
-            return View(await _context.EventLocations.ToListAsync());
+            var query = _context.EventLocations.AsNoTracking().AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(q))
+            {
+                var term = q.Trim();
+                query = query.Where(e =>
+                    e.Name.Contains(term) ||
+                    e.Address.Contains(term) ||
+                    (e.Description != null && e.Description.Contains(term))
+                );
+            }
+
+            if (hasExtra.HasValue)
+            {
+                query = query.Where(e => e.SomethingElse == hasExtra.Value);
+            }
+
+            ViewData["q"] = q ?? string.Empty;
+            ViewData["hasExtra"] = hasExtra;
+
+            var items = await query
+                .OrderBy(e => e.Name)
+                .ToListAsync();
+
+            return View(items);
         }
 
         // GET: EventLocations/Details/5

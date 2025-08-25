@@ -1,70 +1,86 @@
 ﻿@model IEnumerable<CatchTheFun.SpookyMap.Web.Models.EventLocation>
-
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Locations";
+    var q = (string?)ViewData["q"] ?? string.Empty;
+    bool? hasExtra = (bool?)ViewData["hasExtra"]; // null=All, true/false filter
 }
 
-<h1>Index</h1>
+<h1 class="h-spooky mb-3">Registered Houses</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Address)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SomethingElse)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PhotoUrl)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StartTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EndTime)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Address)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SomethingElse)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PhotoUrl)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartTime)
-            </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.EndTime)
-                </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+<div class="card shadow-sm mb-3 p-3">
+    <form method="get" asp-action="Index" class="row g-3 align-items-end">
+        <div class="col-md-6">
+            <label for="q" class="form-label">Search</label>
+            <input type="text" id="q" name="q" value="@q" class="form-control" placeholder="Name, Address, or Candy" />
+        </div>
+        <div class="col-md-4">
+            <label for="hasExtra" class="form-label">Other treats</label>
+            <select id="hasExtra" name="hasExtra" class="form-select">
+                <option value="" selected="@(hasExtra == null)">All</option>
+                <option value="true" selected="@(hasExtra == true)">Yes</option>
+                <option value="false" selected="@(hasExtra == false)">No</option>
+            </select>
+        </div>
+        <div class="col-md-2 d-flex gap-2">
+            <button type="submit" class="btn btn-primary flex-grow-1"><i class="bi bi-search"></i> Filter</button>
+            <a asp-action="Index" class="btn btn-outline-secondary" title="Reset filters">Reset</a>
+        </div>
+    </form>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-2">
+    <div class="text-muted">@Model.Count() result(s)</div>
+    <a asp-action="Create" class="btn btn-primary"><i class="bi bi-house-add"></i> Register</a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-warning">No locations found. Try adjusting your filters.</div>
 }
-    </tbody>
-</table>
+else
+{
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Address</th>
+                        <th>Description</th>
+                        <th>Other treats</th>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th style="width: 140px"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Name</td>
+                        <td>@item.Address</td>
+                        <td>@item.Description</td>
+                        <td>
+                            @if (item.SomethingElse)
+                            {
+                                <span class="badge bg-success">Yes</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">No</span>
+                            }
+                        </td>
+                        <td>@(item.StartTime?.ToString("HH:mm"))</td>
+                        <td>@(item.EndTime?.ToString("HH:mm"))</td>
+                        <td class="text-nowrap">
+                            <a class="btn btn-sm btn-outline-secondary" asp-controller="EventMap" asp-action="Index" asp-route-highlightId="@item.Id" title="View on map"><i class="bi bi-geo-alt"></i></a>
+                            <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                            <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
