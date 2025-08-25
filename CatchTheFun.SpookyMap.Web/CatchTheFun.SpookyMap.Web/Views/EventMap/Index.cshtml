@@ -40,7 +40,44 @@
 
 <h1>🎃 Event Map</h1>
 
-<div id="map" style="height:500px"></div>
+<div class="row g-3">
+    <div class="col-12 col-lg-10">
+        <div id="map" style="height:500px"></div>
+    </div>
+
+    <div class="col-12 col-lg-2">
+        <div class="card shadow-sm" style="font-size:.9rem">
+            <div class="card-header" style="background-color:#241336;color:var(--spooky-text);padding:.5rem .75rem">
+                <i class="bi bi-info-circle"></i> Info
+            </div>
+
+            <div class="list-group list-group-flush">
+                <a class="list-group-item list-group-item-action py-2" href="https://www.waspc.org/sex-offender-information" target="_blank" rel="noopener noreferrer">
+                    <i class="bi bi-search me-1"></i>
+                    Registered Sex Offender Information
+                    <i class="bi bi-box-arrow-up-right float-end"></i>
+                </a>
+                <a class="list-group-item list-group-item-action py-2" href="https://www.safekids.org/tip/halloween-safety-tips" target="_blank" rel="noopener noreferrer">
+                    <i class="bi bi-lightbulb me-1"></i>
+                    Halloween Safety Tips (SafeKids)
+                    <i class="bi bi-box-arrow-up-right float-end"></i>
+                </a>
+            </div>
+
+            <div class="card-body py-2">
+                <div class="fw-semibold mb-1"><i class="bi bi-cloud-sun"></i> Weather</div>
+                <div id="weather-box" class="text-muted" style="min-height:48px">
+                    <div class="small">Center of map</div>
+                    <div class="small">Loading...</div>
+                </div>
+            </div>
+
+            <div class="card-footer text-muted" style="font-size:.8rem;padding:.4rem .75rem">
+                External links. Verify local guidance.
+            </div>
+        </div>
+    </div>
+</div>
 
 @if (apiKey == null)
 {

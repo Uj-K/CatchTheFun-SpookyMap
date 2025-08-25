@@ -39,6 +39,72 @@
     const highlightId = (typeof window !== 'undefined' && typeof window.__HIGHLIGHT_ID__ !== 'undefined')
         ? Number(window.__HIGHLIGHT_ID__) : null;
 
+    // --- Weather box helpers ---
+    const weatherBox = document.getElementById('weather-box');
+    let lastWeather = { lat: null, lng: null, ts: 0 };
+
+    function nearlySame(a, b, eps = 0.01) { // ~1km
+        return a !== null && b !== null && Math.abs(a - b) < eps;
+    }
+
+    async function loadWeather(lat, lng) {
+        if (!weatherBox) return;
+        try {
+            weatherBox.innerHTML = '<div class="small">Center of map</div><div class="small">Loading...</div>';
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat.toFixed(4)}&longitude=${lng.toFixed(4)}&current=temperature_2m,precipitation,weather_code,wind_speed_10m&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('Weather fetch failed');
+            const data = await res.json();
+            const cur = data.current || {};
+            const t = cur.temperature_2m;
+            const w = cur.wind_speed_10m;
+            const p = cur.precipitation;
+            const code = cur.weather_code;
+            const icon = weatherIcon(code);
+            weatherBox.innerHTML = `
+                <div class="d-flex align-items-center gap-2">
+                    <span style="font-size:1.1rem">${icon}</span>
+                    <div>
+                        <div class="small">Center of map</div>
+                        <div class="small">Temp: ${t ?? '?'}°F, Wind: ${w ?? '?'} mph</div>
+                        <div class="small">Precip: ${p ?? 0} in</div>
+                    </div>
+                </div>`;
+        } catch (e) {
+            weatherBox.innerHTML = '<div class="small text-danger">Weather unavailable</div>';
+        }
+    }
+
+    function weatherIcon(code) {
+        // Minimal mapping for demo. See Open-Meteo weather codes.
+        if (code === 0) return '☀️';
+        if ([1,2].includes(code)) return '🌤️';
+        if (code === 3) return '☁️';
+        if ([45,48].includes(code)) return '🌫️';
+        if ([51,53,55,56,57].includes(code)) return '🌦️';
+        if ([61,63,65,66,67,80,81,82].includes(code)) return '🌧️';
+        if ([71,73,75,77,85,86].includes(code)) return '❄️';
+        if ([95,96,99].includes(code)) return '⛈️';
+        return '🌡️';
+    }
+
+    function updateWeather() {
+        if (!weatherBox) return;
+        const c = map.getCenter();
+        const lat = c?.lat();
+        const lng = c?.lng();
+        const now = Date.now();
+        if (nearlySame(lat, lastWeather.lat) && nearlySame(lng, lastWeather.lng) && (now - lastWeather.ts) < 60_000) {
+            return; // throttle ~60s for same area
+        }
+        lastWeather = { lat, lng, ts: now };
+        loadWeather(lat, lng);
+    }
+
+    // Initial weather and when map settles after user interactions
+    google.maps.event.addListenerOnce(map, 'idle', updateWeather);
+    map.addListener('idle', updateWeather);
+
     locations.forEach(loc => {
         const latRaw = loc.Lat ?? loc.lat ?? loc.latitude;
         const lngRaw = loc.Lng ?? loc.lng ?? loc.longitude;
