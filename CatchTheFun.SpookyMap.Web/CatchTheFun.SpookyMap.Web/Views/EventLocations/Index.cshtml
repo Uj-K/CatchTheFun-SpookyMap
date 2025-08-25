@@ -30,7 +30,12 @@
 
 <div class="d-flex justify-content-between align-items-center mb-2">
     <div class="text-muted">@Model.Count() result(s)</div>
-    <a asp-action="Create" class="btn btn-primary"><i class="bi bi-house-add"></i> Register</a>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-danger" asp-controller="Reports" asp-action="Create">
+            <i class="bi bi-flag"></i> Report inaccurate entry
+        </a>
+        <a asp-action="Create" class="btn btn-primary"><i class="bi bi-house-add"></i> Register</a>
+    </div>
 </div>
 
 @if (!Model.Any())
@@ -50,7 +55,7 @@ else
                         <th>Other treats</th>
                         <th>Start</th>
                         <th>End</th>
-                        <th style="width: 140px"></th>
+                        <th style="width: 200px"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -72,10 +77,11 @@ else
                         </td>
                         <td>@(item.StartTime?.ToString("HH:mm"))</td>
                         <td>@(item.EndTime?.ToString("HH:mm"))</td>
-                        <td class="text-nowrap">
+                        <td class="text-nowrap d-flex gap-2">
                             <a class="btn btn-sm btn-outline-secondary" asp-controller="EventMap" asp-action="Index" asp-route-highlightId="@item.Id" title="View on map"><i class="bi bi-geo-alt"></i></a>
                             <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
                             <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                            <a class="btn btn-sm btn-outline-danger" asp-controller="Reports" asp-action="Create" asp-route-eventId="@item.Id" title="Report this entry"><i class="bi bi-flag"></i></a>
                         </td>
                     </tr>
                 }
