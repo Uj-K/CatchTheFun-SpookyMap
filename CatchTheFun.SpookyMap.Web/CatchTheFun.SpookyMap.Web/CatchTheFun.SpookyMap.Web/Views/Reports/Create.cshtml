@@ -1,0 +1,48 @@
+@model CatchTheFun.SpookyMap.Web.Models.ReportCreateViewModel
+@{
+    ViewData["Title"] = "Report an issue";
+}
+
+<h1 class="h-spooky">Report inaccurate entry</h1>
+
+@if (TempData["ReportSent"] != null)
+{
+    <div class="alert alert-success">@TempData["ReportSent"]</div>
+}
+
+<div class="card shadow-sm p-3 mb-3">
+    @if (Model.SelectedLocation != null)
+    {
+        <div class="mb-2 text-muted">Reporting: <strong>@Model.SelectedLocation.Name</strong> — @Model.SelectedLocation.Address</div>
+    }
+
+    <form asp-action="Create" method="post" class="row g-3">
+        <input type="hidden" asp-for="EventLocationId" />
+
+        <div class="col-md-6">
+            <label asp-for="ReporterName" class="form-label"></label>
+            <input asp-for="ReporterName" class="form-control" />
+            <span asp-validation-for="ReporterName" class="text-danger"></span>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="ReporterEmail" class="form-label"></label>
+            <input asp-for="ReporterEmail" class="form-control" />
+            <span asp-validation-for="ReporterEmail" class="text-danger"></span>
+        </div>
+
+        <div class="col-12">
+            <label asp-for="Message" class="form-label"></label>
+            <textarea asp-for="Message" rows="5" class="form-control" placeholder="Describe what is inaccurate or inappropriate."></textarea>
+            <span asp-validation-for="Message" class="text-danger"></span>
+        </div>
+
+        <div class="col-12 d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Submit report</button>
+            <a asp-controller="EventMap" asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}
