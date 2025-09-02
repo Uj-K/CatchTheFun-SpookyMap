@@ -5,6 +5,12 @@ This version, **SpookyMap**, focuses on Halloween house participation and trick-
 
 ---
 
+## 📸 Screenshots
+
+![](image/Spooky.png)
+
+---
+
 ## 📌 What is CatchTheFun?
 
 CatchTheFun is a flexible, map-based platform that allows users to discover and share local community events — from Halloween house tours to yard sales, block parties, and more. This repository demonstrates the **Halloween-themed version** of the platform called **SpookyMap**.
@@ -57,11 +63,6 @@ All event types will use the same map-based pinning and filtering system, custom
 - **Map Integration:** Google Maps API
 - **Database:** Entity Framework Core + SQL Server
 - **Hosting:** Azure Web App (Planned)
-
----
-
-## 📸 Screenshots
-(Coming Soon: Once UI is built)
 
 ---
 
